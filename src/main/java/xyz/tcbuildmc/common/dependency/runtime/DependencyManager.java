@@ -1,12 +1,11 @@
 package xyz.tcbuildmc.common.dependency.runtime;
 
+import me.lucko.jarrelocator.JarRelocator;
 import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import xyz.tcbuildmc.common.dependency.runtime.download.DependencyDownloader;
 import xyz.tcbuildmc.common.dependency.runtime.maven.MavenDependency;
-import xyz.tcbuildmc.common.dependency.runtime.relocate.DependencyRelocator;
-import xyz.tcbuildmc.common.dependency.runtime.util.Properties;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +20,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class DependencyManager {
+    public static String MAVEN_URL = "https://maven.aliyun.com/repository/public/";
+    public static String LIBS_DIR = "rtlibs";
+
     @NotNull
     private final List<Relocation> relocationRules;
 
@@ -56,7 +58,7 @@ public class DependencyManager {
     }
 
     public void download(@NotNull MavenDependency dependency) {
-        this.download(dependency, new File(Properties.LIBS_DIR, dependency.getMavenFileName()));
+        this.download(dependency, new File(LIBS_DIR, dependency.getMavenFileName()));
     }
 
     public void download(@NotNull MavenDependency dependency, @NotNull File dest) {
@@ -65,7 +67,7 @@ public class DependencyManager {
         }
 
         try {
-            new DependencyDownloader(Properties.getMavenUrl() + dependency.getDependencyURL(), dest).download();
+            new DependencyDownloader(getMavenUrl() + dependency.getDependencyURL(), dest).download();
 
         } catch (URISyntaxException |
                  IOException e) {
@@ -74,7 +76,11 @@ public class DependencyManager {
     }
 
     public void relocate(File from, File to) {
-        new DependencyRelocator(this.relocationRules).relocate(from, to);
+        try {
+            new JarRelocator(from, to, this.relocationRules).run();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to relocate file " + from.getName(), e);
+        }
     }
 
     public void addToClasspath(@NotNull File file) {
@@ -113,5 +119,19 @@ public class DependencyManager {
 
             throw new RuntimeException("Failed to load.", e);
         }
+    }
+
+    public static String getMavenUrl() {
+        String url = System.getProperty("rtd.maven_url");
+
+        if (url == null) {
+            return MAVEN_URL;
+        }
+
+        if (url.indexOf(url.length() - 1) != '/') {
+            return url + '/';
+        }
+
+        return url;
     }
 }
