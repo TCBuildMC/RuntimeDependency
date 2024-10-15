@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.jetbrains:annotations:24.1.0"
+    compileOnly "org.jetbrains:annotations:26.0.1"
     annotationProcessor(compileOnly("org.projectlombok:lombok:1.18.34"))
     implementation "commons-io:commons-io:2.16.1"
     implementation "me.lucko:jar-relocator:1.7"
