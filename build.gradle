@@ -17,13 +17,13 @@ repositories {
 
 dependencies {
     compileOnly "org.jetbrains:annotations:24.1.0"
-    annotationProcessor(compileOnly("org.projectlombok:lombok:1.18.34"))
+    annotationProcessor(compileOnly("org.projectlombok:lombok:1.18.36"))
     implementation "commons-io:commons-io:2.16.1"
     implementation "me.lucko:jar-relocator:1.7"
 
     testImplementation platform('org.junit:junit-bom:5.10.3')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testAnnotationProcessor(testCompileOnly("org.projectlombok:lombok:1.18.34"))
+    testAnnotationProcessor(testCompileOnly("org.projectlombok:lombok:1.18.36"))
 }
 
 test {
